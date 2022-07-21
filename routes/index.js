@@ -21,16 +21,34 @@ router.get('/listar', (req, res) => {
   });
 })
 // buscador
-router.get('/buscar', (req, res) => {
+router.get('/buscar/:plantaabuscar', (req, res) => {
+  const {plantaabuscar} = req.params
+  let result 
+  plantas.forEach(planta => {
+    if (planta.name.includes(plantaabuscar)) {
+      result = planta
+      return
+    }
+  });
+
   res.json({
-    "Title": "Productos que coinciden"
+    "result": result
   });
 })
 // Agregar planta
 router.post('/nueva', (req, res) => {
-  console.log(req)
+  const lastItem = plantas.pop();
+  let planta = {
+    type: req.body.type,
+    name: req.body.name,
+    siembra: req.body.siembra,
+    cosecha: req.body.cosecha,
+    id: lastItem.id + 1
+  }
+  plantas.push(lastItem)
+  plantas.push(planta)
   res.json({
-    "Title": "Productos que coinciden"
+    "Title": `${planta.type}: ${planta.name}. sembrar en: ${planta.siembra}, cosechar en: ${planta.cosecha}`
   });
 })
 
