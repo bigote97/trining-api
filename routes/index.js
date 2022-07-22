@@ -1,12 +1,8 @@
 import { Router } from 'express';
 const router = Router();
 
-let plantas = [
-  {"id":0, "type": "planta", "name": "albahaca", "cosecha": "verano", "siembra": "otonio"},
-  {"id":1, "type": "planta", "name": "aloe", "cosecha": "01/05", "siembra": "01/02"},
-  {"id":2, "type": "semilla" ,"name": "tomate", "cosecha": "01/05", "siembra": "01/02"},
-  {"id":3, "type": "planta", "name": "limon", "cosecha": "01/12", "siembra": "11/02"}
-]
+import Planta from '../models/planta.js';
+
 //Raiz
 router.get('/', (req, res) => {
   res.json({
@@ -14,42 +10,56 @@ router.get('/', (req, res) => {
   });
 })
 // Listado de plantas
-router.get('/listar', (req, res) => {
-  res.json({
-    "Title": "listado de plantas",
-    plantas
-  });
+router.get('/listar', async (req, res) => {
+  try {
+    const listadoPlantas = await Planta.find()
+    res.json({
+      "Title": "listado de plantas",
+      listadoPlantas: listadoPlantas
+    });
+  } catch (error) {
+    res.json({
+      "Title": "ERROR",
+      error: error
+    });
+  }
 })
 // buscador
-router.get('/buscar/:plantaabuscar', (req, res) => {
+router.get('/buscar/:plantaabuscar', async (req, res) => {
   const {plantaabuscar} = req.params
-  let result 
-  plantas.forEach(planta => {
-    if (planta.name.includes(plantaabuscar)) {
-      result = planta
-      return
-    }
-  });
+  try {
+    const plantaEncotrada = await Planta.find({ name: plantaabuscar })
+    res.json({
+      "Title": "listado de plantas",
+      plantaEncotrada: plantaEncotrada
+    });
+  } catch (error) {
+    res.json({
+      "Title": "ERROR",
+      error: error
+    });
+  }
 
-  res.json({
-    "result": result
-  });
 })
 // Agregar planta
-router.post('/nueva', (req, res) => {
-  const lastItem = plantas.pop();
-  let planta = {
-    type: req.body.type,
-    name: req.body.name,
-    siembra: req.body.siembra,
-    cosecha: req.body.cosecha,
-    id: lastItem.id + 1
+router.post('/nueva', async (req, res) => {
+  try {
+    await Planta.create({
+      tipo: req.body.tipo,
+      name: req.body.name,
+      siembra: req.body.siembra,
+      cosecha: req.body.cosecha,
+    })
+    res.json({
+      "Title": `Creado con exito`
+    });
+  } catch (error) {
+    res.json({
+      "Title": "ERROR",
+      error: error
+    });
   }
-  plantas.push(lastItem)
-  plantas.push(planta)
-  res.json({
-    "Title": `${planta.type}: ${planta.name}. sembrar en: ${planta.siembra}, cosechar en: ${planta.cosecha}`
-  });
+  
 })
 
 export default router;

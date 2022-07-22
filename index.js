@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import router from './routes/index.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose'
 
 
 dotenv.config()
@@ -11,6 +12,13 @@ dotenv.config()
 //Configuraciones
 app.set('port', process.env.PORT || 3000);
 app.set('json spaces', 2)
+
+
+mongoose.connect(process.env.DB_URI,
+  { useNewUrlParser: true, useUnifiedTopology: true }
+)
+.then(() => console.log('Base de datos conectada'))
+.catch(error => console.log(error))
 
 //Middleware
 app.use(morgan('dev'));
