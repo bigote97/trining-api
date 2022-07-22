@@ -62,4 +62,11 @@ router.post('/nueva', async (req, res) => {
   
 })
 
+// Editar planta existente
+router.put('/editar', async (req, res) => {
+  res.json({
+    "title": `El ID es: ${req.body.id}`
+  })
+})
+
 export default router;
